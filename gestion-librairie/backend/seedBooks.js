@@ -181,7 +181,7 @@ const books = [
         price: 9.0,
         description: "Dorian Gray remains young and beautiful while a portrait of him ages with each sin, revealing his descent into moral corruption.",
         stock: 9,
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546103428i/5297.jpg"
+        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1454087681i/489732.jpg"
     },
     {
         title: "Les Misérables",
@@ -199,7 +199,7 @@ const books = [
         price: 7.99,
         description: "A dark and passionate tale of revenge and doomed love set on the Yorkshire moors.",
         stock: 10,
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1631192373i/6185.jpg"
+        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1478641029i/32929156.jpg"
     },
     {
         title: "A Tale of Two Cities",
@@ -208,7 +208,7 @@ const books = [
         price: 8.75,
         description: "A powerful novel of love and sacrifice set during the French Revolution.",
         stock: 13,
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1554081302i/1953.jpg"
+        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1373220013i/18167916.jpg"
     }
 ];
 

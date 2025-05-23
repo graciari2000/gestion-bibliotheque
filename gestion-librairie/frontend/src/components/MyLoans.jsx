@@ -7,7 +7,7 @@ const MyLoans = () => {
     const [loans, setLoans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [returning, setReturning] = useState(null); // Track which loan is being returned
+    const [returning, setReturning] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,6 @@ const MyLoans = () => {
                     }
                 });
 
-                // Handle both array and object responses
                 const loanData = Array.isArray(res.data) ? res.data : res.data.data || [];
                 setLoans(loanData);
             } catch (err) {
@@ -112,7 +111,7 @@ const MyLoans = () => {
                     </p>
                     <button
                         className="btn btn-primary mt-3"
-                        onClick={() => navigate("/books")}
+                        onClick={() => navigate("/book")}
                     >
                         Voir les livres disponibles
                     </button>
@@ -124,28 +123,26 @@ const MyLoans = () => {
                             <div className="card h-100">
                                 {loan.book?.image && (
                                     <img
-                                        src={`http://localhost:5001/uploads/${loan.book.image}`}
+                                        src={loan.book.image.startsWith('http')
+                                            ? loan.book.image
+                                            : `/uploads/${loan.book.image}`}
                                         alt={loan.book.title}
                                         className="card-img-top"
-                                        style={{
-                                            height: "200px",
-                                            objectFit: "cover"
+                                        style={{ height: "200px", objectFit: "cover" }}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = '/placeholder-book.jpg';
+                                            e.target.style.objectFit = 'contain';
                                         }}
                                     />
                                 )}
                                 <div className="card-body d-flex flex-column">
                                     <h5 className="card-title">{loan.book?.title || "Livre inconnu"}</h5>
                                     <div className="card-text mb-3">
-                                        <p>
-                                            <strong>Auteur:</strong> {loan.book?.author || "Inconnu"}
-                                        </p>
-                                        <p>
-                                            <strong>Emprunté le:</strong> {new Date(loan.loanDate).toLocaleDateString()}
-                                        </p>
+                                        <p><strong>Auteur:</strong> {loan.book?.author?.name || "Inconnu"}</p>
+                                        <p><strong>Emprunté le:</strong> {new Date(loan.loanDate).toLocaleDateString()}</p>
                                         {loan.returnDate && (
-                                            <p>
-                                                <strong>À retourner avant:</strong> {new Date(loan.returnDate).toLocaleDateString()}
-                                            </p>
+                                            <p><strong>À retourner avant:</strong> {new Date(loan.returnDate).toLocaleDateString()}</p>
                                         )}
                                         <p>
                                             <strong>Statut:</strong>{" "}

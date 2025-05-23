@@ -7,7 +7,7 @@ const Cart = () => {
     const [book, setBook] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5001/api/books/${id}`)
+        axios.get(`http://localhost:5001/api/book/${id}`)
             .then((res) => setBook(res.data))
             .catch((err) => console.error("Error fetching book:", err));
     }, [id]);

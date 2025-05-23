@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/api/books", bookRoutes);
+app.use("/api/book", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/loans", loanRoutes);
 

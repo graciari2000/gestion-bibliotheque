@@ -25,7 +25,7 @@ const BookForm = () => {
 
         try {
             const token = localStorage.getItem("token");
-            await axios.post("http://localhost:5001/api/books", formData, {
+            await axios.post("http://localhost:5001/api/book", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`

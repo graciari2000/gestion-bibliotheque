@@ -27,7 +27,7 @@ const BookList = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get("http://localhost:5001/api/books");
+      const res = await axios.get("http://localhost:5001/api/book");
 
       // Debug: Log the full response
       console.log("API Response:", res.data);
