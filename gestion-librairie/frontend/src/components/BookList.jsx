@@ -29,22 +29,29 @@ const BookList = () => {
       setError(null);
       const res = await axios.get("http://localhost:5001/api/book");
 
-      // Debug: Log the full response
-      console.log("API Response:", res.data);
-
       // Handle different response structures
+      let booksData = [];
       if (Array.isArray(res.data)) {
-        // If response is directly an array
-        setBooks(res.data);
+        booksData = res.data;
       } else if (res.data.books && Array.isArray(res.data.books)) {
-        // If response is { books: [...] }
-        setBooks(res.data.books);
+        booksData = res.data.books;
       } else if (res.data.data && Array.isArray(res.data.data)) {
-        // If response is { data: [...] }
-        setBooks(res.data.data);
+        booksData = res.data.data;
       } else {
         throw new Error("Invalid data format received from server");
       }
+
+      // Format book images
+      const formattedBooks = booksData.map(book => ({
+        ...book,
+        image: book.image
+          ? book.image.startsWith('http')
+            ? book.image
+            : `/uploads/${book.image}`
+          : '/placeholder-book.jpg'
+      }));
+
+      setBooks(formattedBooks);
     } catch (err) {
       console.error("Error fetching books:", err);
       setError(err.message || "Failed to load books");
@@ -55,13 +62,15 @@ const BookList = () => {
 
   const filterBooks = () => {
     try {
-      let result = [...books]; // Create a copy of the books array
+      let result = [...books];
 
       // Filter by search term
       if (searchTerm) {
         result = result.filter(book =>
           book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          book.author?.toLowerCase().includes(searchTerm.toLowerCase())
+          (typeof book.author === 'object'
+            ? book.author?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            : book.author?.toLowerCase().includes(searchTerm.toLowerCase()))
         );
       }
 
@@ -86,7 +95,7 @@ const BookList = () => {
 
     try {
       await axios.post(
-        "http://localhost:5001/api/loan/my-loans",
+        "http://localhost:5001/api/my-loans",
         { bookId },
         {
           headers: {
@@ -95,14 +104,14 @@ const BookList = () => {
         }
       );
       alert("Livre emprunté avec succès !");
-      await fetchBooks(); // Refresh the book list
+      await fetchBooks();
     } catch (err) {
       console.error("Error borrowing book:", err);
       alert(err.response?.data?.message || "Erreur lors de l'emprunt");
     }
   };
 
-  // Safely get unique genres
+  // Get unique genres
   const genres = ["all"];
   if (Array.isArray(books)) {
     const bookGenres = books
@@ -134,7 +143,7 @@ const BookList = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 book-list-container">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Liste des livres 📚</h2>
         <Link to="/add-book" className="btn btn-success">
@@ -144,7 +153,7 @@ const BookList = () => {
 
       {/* Search and filter section */}
       <div className="row mb-4">
-        <div className="col-md-6">
+        <div className="col-md-6 mb-3 mb-md-0">
           <div className="input-group">
             <span className="input-group-text">
               <FaSearch />
@@ -173,48 +182,52 @@ const BookList = () => {
         </div>
       </div>
 
-      {/* Book list */}
+      {/* Book grid */}
       {filteredBooks.length === 0 ? (
-        <div className="alert alert-info">Aucun livre trouvé</div>
+        <div className="alert alert-info text-center">
+          Aucun livre trouvé avec ces critères
+        </div>
       ) : (
-        <div className="row row-cols-1 row-cols-md-3 g-4">
+        <div className="book-grid">
           {filteredBooks.map((book) => (
-            <div key={book._id} className="col">
-              <div className="card h-100">
-                <img
-                  src={`http://localhost:5001/uploads/${book.image}`}
-                  className="card-img-top book-cover"
-                  alt={book.title}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{book.title}</h5>
-                  <p className="card-text">
-                    <strong>Auteur:</strong> {book.author}<br />
-                    <strong>Genre:</strong> {book.genre}<br />
-                    <strong>Disponibles:</strong> {book.copiesAvailable}
-                  </p>
-                  {book.summary && (
-                    <p className="card-text text-muted">
-                      {book.summary.substring(0, 100)}...
-                    </p>
-                  )}
+            <div key={book._id} className="book-card">
+              <img
+                src={book.image}
+                className="book-cover"
+                alt={book.title}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder-book.jpg';
+                }}
+              />
+              <div className="book-card-body">
+                <h5 className="book-card-title">{book.title}</h5>
+                <div className="book-card-text">
+                  <p><strong>Auteur:</strong> {typeof book.author === 'object' ? book.author?.name : book.author}</p>
+                  <p><strong>Genre:</strong> {book.genre}</p>
+                  <p><strong>Disponibles:</strong> {book.copiesAvailable}</p>
                 </div>
-                <div className="card-footer bg-transparent">
-                  <div className="d-flex justify-content-between">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleBorrow(book._id)}
-                      disabled={book.copiesAvailable <= 0}
-                    >
-                      {book.copiesAvailable > 0 ? "Emprunter" : "Indisponible"}
-                    </button>
-                    <Link
-                      to={`/cart/${book._id}`}
-                      className="btn btn-outline-secondary"
-                    >
-                      Détails
-                    </Link>
-                  </div>
+                {book.summary && (
+                  <p className="book-card-summary">
+                    {book.summary.substring(0, 100)}...
+                  </p>
+                )}
+              </div>
+              <div className="book-card-footer">
+                <div className="d-flex justify-content-between">
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => handleBorrow(book._id)}
+                    disabled={book.copiesAvailable <= 0}
+                  >
+                    {book.copiesAvailable > 0 ? "Emprunter" : "Indisponible"}
+                  </button>
+                  <Link
+                    to={`/book/${book._id}`}
+                    className="btn btn-outline-secondary btn-sm"
+                  >
+                    Détails
+                  </Link>
                 </div>
               </div>
             </div>

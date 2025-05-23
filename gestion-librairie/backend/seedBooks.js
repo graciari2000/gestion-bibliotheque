@@ -73,7 +73,7 @@ const books = [
         price: 5.99,
         description: "A farm is taken over by its overworked, mistreated animals.",
         stock: 8,
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1325861570i/7613.jpg"
+        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1325861570i/170448.jpg"
     },
     {
         title: "Fahrenheit 451",
